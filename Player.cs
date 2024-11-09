@@ -37,7 +37,6 @@ public class Player : MonoBehaviour
     private bool isBoosting = false;
     private Vector3 normalVector = Vector3.up;
 
-     
     // Rotation and look
     private float xRotation;
     private float yRotation;
@@ -107,6 +106,7 @@ public class Player : MonoBehaviour
     {
         Movement();
     }
+
     private Vector2 FindVelRelativeToLook()
     {
         float lookAngle = orientation.transform.eulerAngles.y;
@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
         x = Input.GetAxisRaw("Horizontal");
         y = Input.GetAxisRaw("Vertical");
         jumping = Input.GetButton("Jump");
-        crouching = Input.GetKey(KeyCode.LeftControl);
+        crouching = Input.GetKey(KeyCode.C);
         sprinting = Input.GetKey(KeyCode.LeftShift);
 
         if (sprinting && crouching && stamina > minStamina)
@@ -151,9 +151,9 @@ public class Player : MonoBehaviour
             TogglePause();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(KeyCode.C))
             StartCrouch();
-        if (Input.GetKeyUp(KeyCode.LeftControl))
+        if (Input.GetKeyUp(KeyCode.C))
             StopCrouch();
     }
 
@@ -201,8 +201,7 @@ public class Player : MonoBehaviour
     {
         float targetChromaticValue = isActive ? 0.6f : 0f;
         float targetLensDistortionValue = isActive ? -0.3f : 0f;
-
-        
+        // Apply camera effects here (like Chromatic Aberration and Lens Distortion)
     }
 
     private void Movement()
@@ -223,8 +222,9 @@ public class Player : MonoBehaviour
         if (grounded && readyToJump)
         {
             readyToJump = false;
-            rb.AddForce(Vector3.up * jumpForce * 1.5f);
+            rb.AddForce(Vector3.up * jumpForce * 2f);
             rb.AddForce(normalVector * jumpForce * 0.5f);
+
 
             Vector3 vel = rb.velocity;
             rb.velocity = new Vector3(vel.x, vel.y > 0 ? vel.y / 2 : 0, vel.z);
@@ -285,43 +285,24 @@ public class Player : MonoBehaviour
 
     private void PlayStepSound()
     {
-        if (grounded && (Mathf.Abs(rb.velocity.x) > 0.1f || Mathf.Abs(rb.velocity.z) > 0.1f))
+        if (grounded && (Mathf.Abs(rb.velocity.x) > 0.1f || Mathf.Abs(rb.velocity.z) > 0.1f) && !isPlayingStepSound && Time.time >= nextStepTime)
         {
-            if (!isPlayingStepSound && Time.time >= nextStepTime)
-            {
-                audioSource.PlayOneShot(stepSound, 0.5f);
-                isPlayingStepSound = true;
-                nextStepTime = Time.time + stepInterval;
-            }
+            isPlayingStepSound = true;
+            audioSource.PlayOneShot(stepSound);
+            nextStepTime = Time.time + stepInterval;
         }
-        else
-        {
-            isPlayingStepSound = false;
-        }
-    }
-
-    private void TogglePause()
-    {
-        bool isPaused = canvasPause.gameObject.activeSelf;
-        canvasPause.gameObject.SetActive(!isPaused);
-        Time.timeScale = isPaused ? 1 : 0;
     }
 
     private void UpdateUI()
     {
-        healthText.text = $"{health}/{maxHealth}";
+        healthText.text = health.ToString();
         staminaBar.fillAmount = stamina / maxStamina;
+    }
 
-        if (stamina < minStamina)
-        {
-            staminaBar.color = Color.red;
-        }
-        else
-        {
-            staminaBar.color = Color.green;
-        }
-
-        float speedRatio = rb.velocity.magnitude / maxSpeed;
-        speedIndicator.color = Color.Lerp(Color.blue, Color.yellow, speedRatio);
+    private void TogglePause()
+    {
+        canvasPause.gameObject.SetActive(!canvasPause.gameObject.activeSelf);
+        canvasMain.gameObject.SetActive(!canvasMain.gameObject.activeSelf);
+        Time.timeScale = canvasPause.gameObject.activeSelf ? 0 : 1;
     }
 }
