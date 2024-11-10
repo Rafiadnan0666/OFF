@@ -203,8 +203,24 @@ public class Interaction : MonoBehaviour
 
     void PickUpItem(GameObject item)
     {
-        inventory.StoreItem(item);
+        if (inventory != null)
+        {
+            if (inventory != null)
+            {
+                inventory.StoreItem(item);
+            }
+            else
+            {
+                Debug.LogError("Inventory is not assigned.");
+            }
+
+        }
+        else
+        {
+            Debug.LogError("Inventory is not assigned.");
+        }
     }
+
 
     void ToggleFlashlight()
     {

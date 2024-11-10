@@ -64,7 +64,16 @@ public class Inventory : MonoBehaviour
                     item.SetActive(false);
 
                     slotTexts[i].text = item.name;
-                    slotImages[i].sprite = item.GetComponentInChildren<SpriteRenderer>().sprite;
+                    var spriteRenderer = item.GetComponentInChildren<SpriteRenderer>();
+                    if (spriteRenderer != null)
+                    {
+                        slotImages[i].sprite = spriteRenderer.sprite;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Item {item.name} does not have a SpriteRenderer.");
+                    }
+
 
                     break;
                 }

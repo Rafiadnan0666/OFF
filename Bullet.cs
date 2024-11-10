@@ -1,22 +1,39 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
     private Rigidbody rb;
-    public float speed = 10f; 
-    public float acceleration = 5f; 
+    public float speed = 10f; // Initial speed of the bullet
+    public float acceleration = 5f; // Additional force applied over time
+    public enum TypeLuru { Parabola, Lurus } // Enum to choose the bullet type
+    public TypeLuru typeLuru; // Variable to set bullet type
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = transform.forward * speed; 
+        rb.velocity = transform.forward * speed; // Initial velocity in the forward direction
     }
 
     void Update()
     {
-      
-        rb.velocity += transform.forward * acceleration * Time.deltaTime;
+        // Apply linear acceleration for 'Lurus' type
+        if (typeLuru == TypeLuru.Lurus)
+        {
+            rb.velocity += transform.forward * acceleration * Time.deltaTime;
+        }
+
+        // Apply parabolic motion
+        if (typeLuru == TypeLuru.Parabola)
+        {
+            ApplyParabolicMotion();
+        }
+    }
+
+    private void ApplyParabolicMotion()
+    {
+        // Parabolic motion involves gravity naturally applied by the physics engine
+        // Ensure gravity is being simulated
+        rb.useGravity = true;
     }
 }

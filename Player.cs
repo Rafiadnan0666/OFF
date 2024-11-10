@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     public GameObject forceFieldPrefab;
 
     // Camera Effects
-    //public Volume postProcessingVolume;
+    //public GameObject postProcessingVolume;
     //private ChromaticAberration chromaticAberration;
     //private LensDistortion lensDistortion;
 
