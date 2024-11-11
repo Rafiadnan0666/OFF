@@ -13,7 +13,12 @@ public class Gun : MonoBehaviour
     public Camera scopeCamera;
     public Camera playerCamera;
 
+    public GameObject bulletPrefab;
     public GameObject muzzleFlashPrefab;
+    public AudioClip fireSound;
+    public AudioClip reloadSound;
+    public AudioSource audioSource;
+
     public CameraShake cameraShake;
 
     public float aimSpeed = 5f;
@@ -34,7 +39,7 @@ public class Gun : MonoBehaviour
 
     void Start()
     {
-        mainCamera = playerCamera; 
+        mainCamera = playerCamera;
         normalFOV = mainCamera.fieldOfView;
         originalGunPosition = transform.localPosition;
         currentAmmo = maxAmmo;
@@ -44,10 +49,10 @@ public class Gun : MonoBehaviour
 
     void Update()
     {
-        
         if (isEquipped)
         {
             playerCamera.gameObject.SetActive(true);
+
             // Toggle scope state when right-clicking
             if (Input.GetMouseButtonDown(1))
             {
@@ -100,44 +105,32 @@ public class Gun : MonoBehaviour
         }
     }
 
-
     void Fire()
     {
         if (currentAmmo > 0)
         {
-            Vector3 direction = (isScoped ? scopeCamera.transform : playerCamera.transform).forward;
-            if (isFullAuto)
-            {
-                float spread = 0.05f;
-                direction += new Vector3(Random.Range(-spread, spread), Random.Range(-spread, spread), 0);
-            }
+            currentAmmo--;
+            UpdateAmmoUI();
 
-            RaycastHit hit;
-            if (Physics.Raycast((isScoped ? scopeCamera.transform : playerCamera.transform).position, direction, out hit, 100f))
+            // Instantiate the bullet prefab
+            Instantiate(bulletPrefab, bulletTip.position, bulletTip.rotation);
+
+            // Play fire sound
+            if (audioSource != null && fireSound != null)
             {
-                Debug.Log($"Hit: {hit.collider.name}");
+                audioSource.PlayOneShot(fireSound);
             }
 
             if (muzzleFlashPrefab != null)
             {
                 Instantiate(muzzleFlashPrefab, bulletTip.position, bulletTip.rotation);
             }
-            else
-            {
-                Debug.LogWarning("Muzzle flash prefab is not assigned.");
-            }
 
+            // Camera shake effect
             if (cameraShake != null)
             {
                 StartCoroutine(cameraShake.Shake(0.1f, 0.3f));
             }
-            else
-            {
-                Debug.LogWarning("Camera shake is not assigned.");
-            }
-
-            currentAmmo--;
-            UpdateAmmoUI();
         }
         else
         {
@@ -145,23 +138,6 @@ public class Gun : MonoBehaviour
         }
     }
 
-
-    IEnumerator Reload()
-    {
-        float reloadTime = 2f;
-        float spinSpeed = 7200f;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < reloadTime)
-        {
-            transform.Rotate(Vector3.right, spinSpeed * Time.deltaTime);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        currentAmmo = maxAmmo;
-        UpdateAmmoUI();
-    }
 
     public void Equip(bool equip)
     {
@@ -185,32 +161,28 @@ public class Gun : MonoBehaviour
         }
     }
 
-    IEnumerator ScopeEffect(bool enable)
+    IEnumerator Reload()
     {
-        float targetFOV = enable ? scopedFOV : normalFOV;
-        float startFOV = mainCamera.fieldOfView;
-        float elapsed = 0f;
+        float reloadTime = 2f;
+        float spinSpeed = 7200f;
+        float elapsedTime = 0f;
 
-        // Detach playerCamera temporarily to prevent deactivation
-        if (enable)
+        if (audioSource != null && reloadSound != null)
         {
-            playerCamera.transform.SetParent(null, true);
+            audioSource.PlayOneShot(reloadSound);
         }
 
-        while (elapsed < 1f)
+        while (elapsedTime < reloadTime)
         {
-            elapsed += Time.deltaTime * aimSpeed;
-            mainCamera.fieldOfView = Mathf.Lerp(startFOV, targetFOV, elapsed);
+            transform.Rotate(Vector3.right, spinSpeed * Time.deltaTime);
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Re-parent playerCamera after scoping ends
-        if (!enable)
-        {
-            playerCamera.transform.SetParent(transform, true);
-        }
+        currentAmmo = maxAmmo;
+        UpdateAmmoUI();
     }
-    
+
     void UpdateAmmoUI()
     {
         if (ammoText != null)

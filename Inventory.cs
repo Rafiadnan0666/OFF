@@ -71,7 +71,7 @@ public class Inventory : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError($"Item {item.name} does not have a SpriteRenderer.");
+                        Debug.Log($"Item {item.name} does not have a SpriteRenderer.");
                     }
 
 

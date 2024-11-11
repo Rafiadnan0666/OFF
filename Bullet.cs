@@ -3,37 +3,39 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    public float bulletSpeed = 50f;
+    public float lifetime = 5f;
+    public float destroyDelayAfterHit = 0.5f;
     private Rigidbody rb;
-    public float speed = 10f; // Initial speed of the bullet
-    public float acceleration = 5f; // Additional force applied over time
-    public enum TypeLuru { Parabola, Lurus } // Enum to choose the bullet type
-    public TypeLuru typeLuru; // Variable to set bullet type
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = transform.forward * speed; // Initial velocity in the forward direction
+        if (rb != null)
+        {
+            rb.velocity = transform.forward * bulletSpeed;
+        }
+        StartCoroutine(DestroyAfterLifetime());
     }
 
-    void Update()
+    void OnCollisionEnter(Collision collision)
     {
-        // Apply linear acceleration for 'Lurus' type
-        if (typeLuru == TypeLuru.Lurus)
-        {
-            rb.velocity += transform.forward * acceleration * Time.deltaTime;
-        }
+        // Optional: Add logic for what happens on impact, like dealing damage
+        Debug.Log($"Bullet hit: {collision.collider.name}");
 
-        // Apply parabolic motion
-        if (typeLuru == TypeLuru.Parabola)
-        {
-            ApplyParabolicMotion();
-        }
+        // Destroy bullet after a short delay
+        StartCoroutine(DestroyAfterHit());
     }
 
-    private void ApplyParabolicMotion()
+    IEnumerator DestroyAfterLifetime()
     {
-        // Parabolic motion involves gravity naturally applied by the physics engine
-        // Ensure gravity is being simulated
-        rb.useGravity = true;
+        yield return new WaitForSeconds(lifetime);
+        Destroy(gameObject);
+    }
+
+    IEnumerator DestroyAfterHit()
+    {
+        yield return new WaitForSeconds(destroyDelayAfterHit);
+        Destroy(gameObject);
     }
 }

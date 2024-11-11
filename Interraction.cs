@@ -226,7 +226,7 @@ public class Interaction : MonoBehaviour
     {
         if (inventory != null)
         {
-            inventory.ToggleFlashlight(); // Assuming ToggleFlashlight() is defined in your Inventory script
+            inventory.ToggleFlashlight(); 
         }
     }
 

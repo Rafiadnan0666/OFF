@@ -12,6 +12,7 @@ public class Kucing : MonoBehaviour
     public AudioClip walkClip; 
     public float roamRadius = 20f;
     public float timeToApproachPlayer = 5f;
+    public float health = 100f;
 
     SerializeField SerializeField;
     private float distanceToPlayer;
@@ -31,6 +32,7 @@ public class Kucing : MonoBehaviour
         DetectPlayer();
         HandleMovement();
     }
+    
 
     private void DetectPlayer()
     {
@@ -41,6 +43,11 @@ public class Kucing : MonoBehaviour
             approachTimer = timeToApproachPlayer;
             kucingAudio.PlayOneShot(meowClip);
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(this .gameObject)
     }
 
     private void HandleMovement()
