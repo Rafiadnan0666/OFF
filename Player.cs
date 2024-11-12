@@ -106,6 +106,18 @@ public class Player : MonoBehaviour
     {
         Movement();
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Check if the object that hit the cat has the tag "bullet"
+        if (collision.gameObject.CompareTag("bullet"))
+        {
+            // Reduce health when hit by a bullet
+            health -= 20f; // Adjust damage amount as needed
+
+            // Destroy the bullet after the hit
+            Destroy(collision.gameObject);
+        }
+    }
 
     private Vector2 FindVelRelativeToLook()
     {
