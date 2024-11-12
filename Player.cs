@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Check if the object that hit the cat has the tag "bullet"
-        if (collision.gameObject.CompareTag("bullet"))
+        if (collision.gameObject.CompareTag("Bullet"))
         {
             // Reduce health when hit by a bullet
             health -= 20f; // Adjust damage amount as needed
