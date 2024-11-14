@@ -18,11 +18,14 @@ public class EnemyRobot : MonoBehaviour
     private bool alreadyAttacked;
     public GameObject projectile;
 
+    public enum Ngambang { False, True }
+    public Ngambang ngambangState;
+
     // States
     public float sightRange = 20f, attackRange = 10f;
     private bool playerInSightRange, playerInAttackRange;
 
-    private Vector3 currentpos;
+    private Vector3 currentPos;
 
     private void Awake()
     {
@@ -32,9 +35,12 @@ public class EnemyRobot : MonoBehaviour
 
     private void Update()
     {
-        currentpos = transform.position;
-        float newY = Mathf.Sin(Time.time * 3) * currentpos.y + 1.5f;
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        if (ngambangState == Ngambang.True)
+        {
+            currentPos = transform.position;
+            float newY = Mathf.Sin(Time.time * 3) * currentPos.y + 0.5f;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        }
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 
