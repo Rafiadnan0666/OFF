@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public Image speedIndicator;
     public Canvas canvasMain;
     public Canvas canvasPause;
+    public Canvas canvasMati;
 
     // Assignables
     public Transform playerCam;
@@ -136,6 +137,7 @@ public class Player : MonoBehaviour
         SmoothCameraShake();
         PlayStepSound();
         UpdateUI();
+        Die();
     }
 
     private void MyInput()
@@ -321,7 +323,27 @@ public class Player : MonoBehaviour
         Time.timeScale = canvasPause.gameObject.activeSelf ? 0 : 1;
     }
 
-   
+    private void Die()
+    {
+        if (health <= 0)
+        {
+          
+            rb.constraints &= ~RigidbodyConstraints.FreezeRotation;
+
+           
+            rb.isKinematic = true; 
+            GetComponent<Collider>().enabled = false;
+            this.enabled = false; 
+
+            
+            canvasMati.gameObject.SetActive(true);
+
+            
+            //Time.timeScale = 0;
+        }
+    }
+
+
 }
 
 
