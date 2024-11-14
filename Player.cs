@@ -108,16 +108,13 @@ public class Player : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        // Check if the object that hit the cat has the tag "bullet"
         if (collision.gameObject.CompareTag("Bullet"))
         {
-            // Reduce health when hit by a bullet
-            health -= 20f; // Adjust damage amount as needed
-
-            // Destroy the bullet after the hit
+            health -= 20f;
             Destroy(collision.gameObject);
         }
     }
+   
 
     private Vector2 FindVelRelativeToLook()
     {
@@ -149,7 +146,11 @@ public class Player : MonoBehaviour
         crouching = Input.GetKey(KeyCode.C);
         sprinting = Input.GetKey(KeyCode.LeftShift);
 
-        if (sprinting && crouching && stamina > minStamina)
+        if (sprinting )
+        {
+            stamina -= Time.deltaTime * 10f;
+        }
+        else if (sprinting && stamina > minStamina)
         {
             StartBoost();
         }
@@ -162,6 +163,8 @@ public class Player : MonoBehaviour
         {
             TogglePause();
         }
+
+
 
         if (Input.GetKeyDown(KeyCode.C))
             StartCrouch();
@@ -317,4 +320,10 @@ public class Player : MonoBehaviour
         canvasMain.gameObject.SetActive(!canvasMain.gameObject.activeSelf);
         Time.timeScale = canvasPause.gameObject.activeSelf ? 0 : 1;
     }
+
+   
 }
+
+
+
+

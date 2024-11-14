@@ -43,7 +43,7 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1)) AccessSlot(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) AccessSlot(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) AccessSlot(2);
-        if (Input.GetKeyDown(KeyCode.F)) ToggleFlashlight(); // Toggle flashlight
+        if (Input.GetKeyDown(KeyCode.F)) ToggleFlashlight();
 
         if (Input.GetKeyDown(KeyCode.Q)) DropCurrentItem();
     }
@@ -56,7 +56,7 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < storedItems.Length - 1; i++) // Exclude the flashlight slot
+            for (int i = 0; i < storedItems.Length - 1; i++) 
             {
                 if (storedItems[i] == null)
                 {

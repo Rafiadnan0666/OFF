@@ -3,89 +3,110 @@ using UnityEngine.AI;
 
 public class EnemyRobot : MonoBehaviour
 {
+    public NavMeshAgent agent;
     public Transform player;
-    public float sightRange = 15f;
-    public float detectionRange = 5f;
-    public GameObject bulletPrefab;
-    public Transform firePoint;
-    public float shootInterval = 2f;
-    public float inaccuracy = 5f; // Adjust for shooting inaccuracy
-    public Transform hidingSpot; // Assign the corner hiding spot in the inspector
+    public LayerMask groundLayer, playerLayer;
+    public float health = 100f;
 
-    private bool playerDetected = false;
-    private float floatSpeed = 2f;
-    private float floatHeight = 0.5f;
-    private float lastShotTime;
-    private bool isHiding = true; // For the hiding variant
-    private NavMeshAgent agent;
+    // Patrolling
+    public Vector3 walkPoint;
+    private bool walkPointSet;
+    public float walkPointRange;
 
-    void Start()
+    // Attacking
+    public float timeBetweenAttacks = 1f;
+    private bool alreadyAttacked;
+    public GameObject projectile;
+
+    // States
+    public float sightRange = 20f, attackRange = 10f;
+    private bool playerInSightRange, playerInAttackRange;
+
+    private Vector3 currentpos;
+
+    private void Awake()
     {
+        player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
-    void Update()
+    private void Update()
     {
-        // Floating effect
-        float newY = Mathf.Sin(Time.time * floatSpeed) * floatHeight;
+        currentpos = transform.position;
+        float newY = Mathf.Sin(Time.time * 3) * currentpos.y + 1.5f;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
+        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 
-        // Check player sight detection
-        if (Vector3.Distance(transform.position, player.position) <= sightRange)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, (player.position - transform.position).normalized, out hit, sightRange))
-            {
-                if (hit.transform.CompareTag("Player"))
-                {
-                    playerDetected = true;
-                    isHiding = false; // Robot stops hiding when it detects the player
-                }
-            }
-        }
+        if (!playerInSightRange && !playerInAttackRange)
+            Patrol();
+        else if (playerInSightRange && !playerInAttackRange)
+            ChasePlayer();
+        else if (playerInAttackRange && playerInSightRange)
+            AttackPlayer();
+    }
 
-        // Check player sound detection
-        if (Vector3.Distance(transform.position, player.position) <= detectionRange)
-        {
-            playerDetected = true;
-            isHiding = false;
-        }
+    private void Patrol()
+    {
+        if (!walkPointSet) SearchWalkPoint();
 
-        // Move to hiding spot if in hiding state
-        if (isHiding)
-        {
-            agent.SetDestination(hidingSpot.position);
-            if (Vector3.Distance(transform.position, hidingSpot.position) < 1f) // Check if it reached the hiding spot
-            {
-                agent.isStopped = true; // Stop the agent from moving further
-            }
-        }
+        if (walkPointSet)
+            agent.SetDestination(walkPoint);
 
-        // Shooting logic
-        if (playerDetected && Time.time - lastShotTime >= shootInterval)
+        Vector3 distanceToWalkPoint = transform.position - walkPoint;
+        if (distanceToWalkPoint.magnitude < 1f)
+            walkPointSet = false;
+    }
+
+    private void SearchWalkPoint()
+    {
+        float randomZ = Random.Range(-walkPointRange, walkPointRange);
+        float randomX = Random.Range(-walkPointRange, walkPointRange);
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+
+        if (Physics.Raycast(walkPoint, -transform.up, 2f, groundLayer))
+            walkPointSet = true;
+    }
+
+    private void ChasePlayer()
+    {
+        agent.SetDestination(player.position);
+    }
+
+    private void AttackPlayer()
+    {
+        agent.SetDestination(transform.position);
+        transform.LookAt(player);
+
+        if (!alreadyAttacked)
         {
-            Shoot();
-            lastShotTime = Time.time;
+            Instantiate(projectile, transform.position + transform.forward, Quaternion.identity);
+            alreadyAttacked = true;
+            Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
     }
 
-    void Shoot()
+    private void ResetAttack()
     {
-        // Introduce inaccuracy by modifying the direction
-        Vector3 shootingDirection = (player.position );
-        //shootingDirection.x += Random.Range(-inaccuracy, inaccuracy) * 0.01f;
-        //shootingDirection.y += Random.Range(-inaccuracy, inaccuracy) * 0.01f;
-
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-        bullet.GetComponent<Rigidbody>().velocity = shootingDirection * 20f; // Adjust speed as needed
+        alreadyAttacked = false;
     }
-    private void OnDrawGizmos()
+
+    public void TakeDamage(float damageAmount)
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, player.transform.position);
+        health -= damageAmount;
+        if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+    }
+
+    private void DestroyEnemy()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
-       
     }
 }
-
-//-firePoint.position
