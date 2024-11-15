@@ -83,6 +83,10 @@ public class Player : MonoBehaviour
     private float nextStepTime = 0f;
     private bool isPlayingStepSound = false;
 
+    //built in
+    public Light Senter;
+    public bool Senternya = false;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -101,6 +105,8 @@ public class Player : MonoBehaviour
         canvasPause.gameObject.SetActive(false);
         audioSource = GetComponent<AudioSource>();
         initialCamPosition = playerCam.localPosition;
+        canvasMati.gameObject.SetActive(false);
+        Senter.gameObject.SetActive(Senternya);
     }
 
     private void FixedUpdate()
@@ -139,7 +145,7 @@ public class Player : MonoBehaviour
         UpdateUI();
         Die();
     }
-
+    
     private void MyInput()
     {
         x = Input.GetAxisRaw("Horizontal");
@@ -166,7 +172,7 @@ public class Player : MonoBehaviour
             TogglePause();
         }
 
-
+        senter();
 
         if (Input.GetKeyDown(KeyCode.C))
             StartCrouch();
@@ -203,6 +209,7 @@ public class Player : MonoBehaviour
         }
     }
 
+
     private void StopBoost()
     {
         isBoosting = false;
@@ -218,7 +225,7 @@ public class Player : MonoBehaviour
     {
         float targetChromaticValue = isActive ? 0.6f : 0f;
         float targetLensDistortionValue = isActive ? -0.3f : 0f;
-        // Apply camera effects here (like Chromatic Aberration and Lens Distortion)
+        
     }
 
     private void Movement()
@@ -340,6 +347,15 @@ public class Player : MonoBehaviour
 
             
             //Time.timeScale = 0;
+        }
+    }
+
+    private void senter()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Senternya = !Senternya; 
+            Senter.gameObject.SetActive(Senternya);
         }
     }
 

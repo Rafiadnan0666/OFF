@@ -26,6 +26,7 @@ public class EnemyRobot : MonoBehaviour
     private bool playerInSightRange, playerInAttackRange;
 
     private Vector3 currentPos;
+    private float damageAmount;
 
     private void Awake()
     {
@@ -41,7 +42,8 @@ public class EnemyRobot : MonoBehaviour
             float newY = Mathf.Sin(Time.time * 3) * currentPos.y + 0.5f;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
+
+        playerInSightRange = IsPlayerVisible();
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 
         if (!playerInSightRange && !playerInAttackRange)
@@ -50,6 +52,8 @@ public class EnemyRobot : MonoBehaviour
             ChasePlayer();
         else if (playerInAttackRange && playerInSightRange)
             AttackPlayer();
+
+        damageAmount= Random.Range(5,10);
     }
 
     private void Patrol()
@@ -62,6 +66,7 @@ public class EnemyRobot : MonoBehaviour
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
         if (distanceToWalkPoint.magnitude < 1f)
             walkPointSet = false;
+
     }
 
     private void SearchWalkPoint()
@@ -92,16 +97,33 @@ public class EnemyRobot : MonoBehaviour
         }
     }
 
+    private bool IsPlayerVisible()
+    {
+        RaycastHit hit;
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, sightRange))
+        {
+            if (hit.transform.CompareTag("Player"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void ResetAttack()
     {
         alreadyAttacked = false;
     }
-
-    public void TakeDamage(float damageAmount)
+    private void OnCollisionEnter(Collision collision)
     {
-        health -= damageAmount;
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            health -= damageAmount;
+            if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        }
     }
+   
 
     private void DestroyEnemy()
     {

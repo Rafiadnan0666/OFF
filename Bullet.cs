@@ -45,6 +45,11 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        Destroy(this.gameObject,1f);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
@@ -67,5 +72,6 @@ public class Bullet : MonoBehaviour
             // }
             Destroy(gameObject);
         }
+        Destroy(gameObject);
     }
 }
