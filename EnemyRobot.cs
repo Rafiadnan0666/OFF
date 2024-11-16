@@ -6,7 +6,7 @@ public class EnemyRobot : MonoBehaviour
     public NavMeshAgent agent;
     public Transform player;
     public LayerMask groundLayer, playerLayer;
-    public float health = 100f;
+    public float health = 50f;
 
     // Patrolling
     public Vector3 walkPoint;
@@ -27,6 +27,10 @@ public class EnemyRobot : MonoBehaviour
 
     private Vector3 currentPos;
     private float damageAmount;
+
+    public GameObject Explode;
+
+    public GameObject Flash;
 
     private void Awake()
     {
@@ -91,6 +95,7 @@ public class EnemyRobot : MonoBehaviour
 
         if (!alreadyAttacked)
         {
+            Instantiate(Flash, transform.position + transform.forward,Quaternion.identity);
             Instantiate(projectile, transform.position + transform.forward, Quaternion.identity);
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -119,15 +124,16 @@ public class EnemyRobot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
-            health -= damageAmount;
-            if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+            health -= 20f;
+            DestroyEnemy();
         }
     }
    
 
     private void DestroyEnemy()
     {
-        Destroy(gameObject);
+        Instantiate(Explode, transform.forward, transform.rotation);
+        Destroy(this.gameObject);
     }
 
     private void OnDrawGizmosSelected()

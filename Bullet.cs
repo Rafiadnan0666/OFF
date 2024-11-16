@@ -47,7 +47,7 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        Destroy(this.gameObject,1f);
+        Destroy(this.gameObject,5f);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -60,7 +60,7 @@ public class Bullet : MonoBehaviour
                 // Apply damage to the player
                 //player.TakeDamage(damage);
             }
-            Destroy(gameObject);
+            Destroy(gameObject,5f);
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
@@ -70,8 +70,8 @@ public class Bullet : MonoBehaviour
             // {
             //     enemy.TakeDamage((int)damage);
             // }
-            Destroy(gameObject);
+            Destroy(gameObject,5f);
         }
-        Destroy(gameObject);
+        Destroy(gameObject,5f);
     }
 }

@@ -54,23 +54,23 @@ public class Gun : MonoBehaviour
             playerCamera.gameObject.SetActive(true);
 
             // Toggle scope state when right-clicking
-            if (Input.GetMouseButtonDown(1))
-            {
-                isScoped = !isScoped;
-                StartCoroutine(AimGun(isScoped));
-            }
+            //if (Input.GetMouseButtonDown(1))
+            //{
+            //    isScoped = !isScoped;
+            //    StartCoroutine(AimGun(isScoped));
+            //}
 
-            // Ensure the correct cameras are activated based on scope state
-            if (isScoped)
-            {
-                playerCamera.gameObject.SetActive(true);
-                scopeCamera.gameObject.SetActive(true);
-            }
-            else
-            {
-                playerCamera.gameObject.SetActive(true);
-                scopeCamera.gameObject.SetActive(false);
-            }
+            //Ensure the correct cameras are activated based on scope state
+            //if (isScoped)
+            //{
+            //    playerCamera.gameObject.SetActive(true);
+            //    scopeCamera.gameObject.SetActive(true);
+            //}
+            //else
+            //{
+            //    playerCamera.gameObject.SetActive(true);
+            //    scopeCamera.gameObject.SetActive(false);
+            //}
 
             // Fire logic
             if (isFullAuto && Input.GetMouseButton(0))
@@ -164,7 +164,7 @@ public class Gun : MonoBehaviour
     IEnumerator Reload()
     {
         float reloadTime = 2f;
-        float spinSpeed = 7200f;
+        float spinSpeed = 360;
         float elapsedTime = 0f;
 
         if (audioSource != null && reloadSound != null)
