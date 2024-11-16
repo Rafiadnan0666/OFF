@@ -232,7 +232,7 @@ public class Interaction : MonoBehaviour
 
     void InteractWithObject(GameObject interactable)
     {
-        // Implement interaction logic here (e.g., opening doors, pressing buttons)
+        
     }
 
     bool RequiresLeftClick(GameObject item)

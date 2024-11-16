@@ -112,10 +112,10 @@ public class Gun : MonoBehaviour
             currentAmmo--;
             UpdateAmmoUI();
 
-            // Instantiate the bullet prefab
+  
             Instantiate(bulletPrefab, bulletTip.position, bulletTip.rotation);
 
-            // Play fire sound
+
             if (audioSource != null && fireSound != null)
             {
                 audioSource.PlayOneShot(fireSound);
@@ -126,10 +126,10 @@ public class Gun : MonoBehaviour
                 Instantiate(muzzleFlashPrefab, bulletTip.position, bulletTip.rotation);
             }
 
-            // Camera shake effect
+
             if (cameraShake != null)
             {
-                StartCoroutine(cameraShake.Shake(0.1f, 0.3f));
+                StartCoroutine(cameraShake.Shake(0f, 0f));
             }
         }
         else
@@ -145,16 +145,16 @@ public class Gun : MonoBehaviour
 
         if (equip)
         {
-            // Logic for equipping the gun
+      
             Debug.Log("Gun equipped");
         }
         else
         {
-            // Logic for unequipping the gun
+       
             Debug.Log("Gun unequipped");
         }
 
-        // Ensure the player camera stays active even if the parent is set inactive
+      
         if (playerCamera != null)
         {
             playerCamera.gameObject.SetActive(true);

@@ -30,7 +30,7 @@ public class Kucing : MonoBehaviour
         DetectPlayer();
         HandleMovement();
 
-        // Check if health drops to zero or below
+        
         if (health <= 0)
         {
             Die();
@@ -50,13 +50,13 @@ public class Kucing : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Check if the object that hit the cat has the tag "bullet"
+        
         if (collision.gameObject.CompareTag("bullet"))
         {
-            // Reduce health when hit by a bullet
-            health -= 20f; // Adjust damage amount as needed
+          
+            health -= 20f; 
 
-            // Destroy the bullet after the hit
+         
             Destroy(collision.gameObject);
         }
     }
@@ -117,10 +117,10 @@ public class Kucing : MonoBehaviour
 
     private void Die()
     {
-        // Handle what happens when the cat dies (e.g., play an animation, disable the agent)
+        // klo mati ngapain
         kucingAnimator.SetTrigger("Die");
         kucing.enabled = false;
-        kucingAudio.Stop(); // Stop playing any current audio
+        kucingAudio.Stop(); 
         Debug.Log("The cat has died.");
     }
 

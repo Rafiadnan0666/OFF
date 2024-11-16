@@ -27,9 +27,9 @@ public class CameraShake : MonoBehaviour
 
             cameraTransform.localPosition = new Vector3(x, y, z) + originalPosition;
             cameraTransform.localRotation = new Quaternion(
-                Random.Range(-1f, 1f) * magnitude,
-                Random.Range(-1f, 1f) * magnitude,
-                Random.Range(-1f, 1f) * magnitude,
+                Random.Range(-0f, 0f) * magnitude,
+                Random.Range(-0f, 0f) * magnitude,
+                Random.Range(-0f, 0f) * magnitude,
                 1f) * originalRotation;
 
             elapsed += Time.deltaTime;

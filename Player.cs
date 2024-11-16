@@ -107,6 +107,8 @@ public class Player : MonoBehaviour
         initialCamPosition = playerCam.localPosition;
         canvasMati.gameObject.SetActive(false);
         Senter.gameObject.SetActive(Senternya);
+
+        grounded = false;
     }
 
     private void FixedUpdate()
@@ -120,8 +122,22 @@ public class Player : MonoBehaviour
             health -= 20f;
             Destroy(collision.gameObject);
         }
+
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            readyToJump = true;
+            grounded = true;
+        }
     }
-   
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            readyToJump = false;
+            grounded = false;
+        }
+    }
 
     private Vector2 FindVelRelativeToLook()
     {
@@ -201,7 +217,7 @@ public class Player : MonoBehaviour
     private void StartBoost()
     {
         isBoosting = true;
-        rb.drag = 0.5f;
+        rb.drag = 0.00000000002f;
         if (stamina > minStamina)
         {
             stamina -= Time.deltaTime * 10f;
@@ -252,14 +268,10 @@ public class Player : MonoBehaviour
 
             Vector3 vel = rb.velocity;
             rb.velocity = new Vector3(vel.x, vel.y > 0 ? vel.y / 2 : 0, vel.z);
-            Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
 
-    private void ResetJump()
-    {
-        readyToJump = true;
-    }
+  
 
     private void Look()
     {
@@ -309,13 +321,31 @@ public class Player : MonoBehaviour
 
     private void PlayStepSound()
     {
-        if (grounded && (Mathf.Abs(rb.velocity.x) > 0.1f || Mathf.Abs(rb.velocity.z) > 0.1f) && !isPlayingStepSound && Time.time >= nextStepTime)
+        x = Input.GetAxisRaw("Horizontal");
+        y = Input.GetAxisRaw("Vertical");
+
+        // Check if the player is grounded and moving
+        if (grounded && (Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f))
         {
-            isPlayingStepSound = true;
-            audioSource.PlayOneShot(stepSound);
-            nextStepTime = Time.time + stepInterval;
+            // Start playing the step sound if it's not already playing
+            if (!audioSource.isPlaying)
+            {
+                audioSource.loop = true; // Ensure the AudioSource is set to loop
+                audioSource.clip = stepSound;
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            // Stop playing the sound if the player is not moving or not grounded
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
         }
     }
+
+
 
     private void UpdateUI()
     {
@@ -346,7 +376,7 @@ public class Player : MonoBehaviour
             canvasMati.gameObject.SetActive(true);
 
             
-            //Time.timeScale = 0;
+            Time.timeScale = 0;
         }
     }
 

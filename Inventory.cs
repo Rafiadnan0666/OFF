@@ -113,8 +113,8 @@ public class Inventory : MonoBehaviour
         {
             if (currentItem != null)
             {
-                StoreItem(currentItem);  // Store the current equipped item back in the inventory
-                currentItem.transform.parent = null; // Detach from spawn point
+                StoreItem(currentItem); 
+                currentItem.transform.parent = null; 
             }
 
             currentItem = storedItems[slotIndex];
@@ -123,17 +123,17 @@ public class Inventory : MonoBehaviour
             Rigidbody rb = currentItem.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.isKinematic = true;  // Disable physics for the equipped item
+                rb.isKinematic = true;  
             }
 
             currentItem.SetActive(true);
 
-            // Make the item a child of the spawn point so it sticks
+         
             currentItem.transform.parent = spawnPoint;
-            currentItem.transform.localPosition = Vector3.zero; // Reset position to match the spawn point
-            currentItem.transform.localRotation = Quaternion.identity; // Reset rotation
+            currentItem.transform.localPosition = Vector3.zero; 
+            currentItem.transform.localRotation = Quaternion.identity;
 
-            // Mark as equipped
+      
             if (currentItem.CompareTag("Gun"))
             {
                 currentItem.GetComponent<Gun>().Equip(true);
@@ -151,7 +151,7 @@ public class Inventory : MonoBehaviour
         {
             currentItem.SetActive(true);
 
-            // Detach the item from the spawn point
+         
             currentItem.transform.parent = null;
             currentItem.transform.position = spawnPoint.position;
             currentItem.transform.rotation = spawnPoint.rotation;
@@ -181,7 +181,7 @@ public class Inventory : MonoBehaviour
         {
             if (storedItems[i] == item)
             {
-                slotTexts[i].text = "";
+                slotTexts[i].text = "empty";
                 slotImages[i].sprite = null;
                 storedItems[i] = null;  
                 break;

@@ -7,7 +7,12 @@ public class Bullet : MonoBehaviour
     public Transform target;
     public TargetType currentTarget;
 
+    public GameObject Explode;
+
     public enum TargetType { Player, Enemy }
+
+    public Meledak dak;
+    public enum Meledak { ya , ga};
 
     void Start()
     {
@@ -47,7 +52,7 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        Destroy(this.gameObject,5f);
+        Destroy(this.gameObject,1f);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -60,7 +65,11 @@ public class Bullet : MonoBehaviour
                 // Apply damage to the player
                 //player.TakeDamage(damage);
             }
-            Destroy(gameObject,5f);
+            if(dak == Meledak.ya)
+            {
+                Instantiate(Explode, transform.position, Quaternion.identity);
+            }
+            Destroy(gameObject);
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
@@ -70,8 +79,13 @@ public class Bullet : MonoBehaviour
             // {
             //     enemy.TakeDamage((int)damage);
             // }
-            Destroy(gameObject,5f);
+            Destroy(gameObject);
+            if (dak == Meledak.ya)
+            {
+                Instantiate(Explode, transform.position, Quaternion.identity);
+            }
+            Destroy(gameObject);
         }
-        Destroy(gameObject,5f);
+        Destroy(gameObject,1f);
     }
 }
