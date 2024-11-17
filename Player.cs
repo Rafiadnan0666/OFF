@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
     public float runSpeed = 15f;
     public float boostSpeed = 20f;
     public float maxSpeed = 20f;
-    public bool grounded;
+    public bool grounded = false;
     public LayerMask whatIsGround;
     private bool isSliding = false;
 
@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
     private Vector3 initialCamPosition;
 
     // Input
-    float x, y;
+    private float x, y;
     bool jumping, crouching, sprinting;
 
     // Step Sound
