@@ -78,6 +78,7 @@ public class Player : MonoBehaviour
 
     // Step Sound
     public AudioClip stepSound;
+    public AudioClip Drop;
     private AudioSource audioSource;
     private float stepInterval = 0.5f;
     private float nextStepTime = 0f;
@@ -127,6 +128,7 @@ public class Player : MonoBehaviour
         {
             readyToJump = true;
             grounded = true;
+            Drop.isReadyToPlay = true;
         }
     }
 
