@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -128,7 +129,7 @@ public class Player : MonoBehaviour
         {
             readyToJump = true;
             grounded = true;
-            Drop.isReadyToPlay = true;
+            audioSource.PlayOneShot(Drop);
         }
     }
 
