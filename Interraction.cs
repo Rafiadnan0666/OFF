@@ -53,7 +53,7 @@ public class Interaction : MonoBehaviour
         if (Physics.Raycast(ray, out hit, maxInteractionDistance, interactableLayer))
         {
             GameObject hitObject = hit.collider.gameObject;
-            if (hitObject.CompareTag("Interactable"))
+            if (hitObject.CompareTag("Interactable") )
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -78,6 +78,19 @@ public class Interaction : MonoBehaviour
             {
                 ShowTextE(true);
                 ShowTextF(false);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isHolding = true;
+                    currentInteractable = hitObject;
+                    currentRigidbody = currentInteractable.GetComponent<Rigidbody>();
+
+                    if (currentRigidbody != null)
+                    {
+                        currentRigidbody.useGravity = false;
+                    }
+                    distanceToCamera = Vector3.Distance(mainCamera.transform.position, hit.point);
+                    offset = currentInteractable.transform.position - hit.point;
+                }
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
@@ -88,6 +101,20 @@ public class Interaction : MonoBehaviour
             {
                 ShowTextE(false);
                 ShowTextF(true);
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isHolding = true;
+                    currentInteractable = hitObject;
+                    currentRigidbody = currentInteractable.GetComponent<Rigidbody>();
+
+                    if (currentRigidbody != null)
+                    {
+                        currentRigidbody.useGravity = false;
+                    }
+                    distanceToCamera = Vector3.Distance(mainCamera.transform.position, hit.point);
+                    offset = currentInteractable.transform.position - hit.point;
+                }
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
