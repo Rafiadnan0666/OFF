@@ -2,30 +2,41 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 20f;
-    public float damage = 10f;
-    public Transform target;
-    public TargetType currentTarget;
-
-    public GameObject Explode;
+    public float speed = 20f;                   // Speed of the bullet
+    public float damage = 10f;                 // Damage dealt by the bullet
+    public Transform target;                   // Target for the bullet
+    public TargetType currentTarget;           // Type of target (Player or Enemy)
+    public GameObject Explode;                 // Explosion effect prefab
+    public Meledak dak;                        // Explosion type
 
     public enum TargetType { Player, Enemy }
+    public enum Meledak { ya, ga }
 
-    public Meledak dak;
-    public enum Meledak { ya , ga};
+    private Rigidbody rb;
+    private Camera mainCamera;
 
     void Start()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        mainCamera = Camera.main;
+
+        if (rb == null)
+        {
+            Debug.LogError("Bullet requires a Rigidbody component!");
+            return;
+        }
 
         if (currentTarget == TargetType.Enemy)
         {
-            if (target == null)
+            if (target == null && mainCamera != null)
             {
-                // Launch the projectile forward if no target is specified
-                if (rb != null)
+                // Perform a raycast from the center of the screen
+                Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    rb.velocity = transform.forward * speed;
+                    // If a hit is detected, aim the bullet at the hit point
+                    target = new GameObject("TemporaryTarget").transform;
+                    target.position = hit.point;
                 }
             }
         }
@@ -42,17 +53,29 @@ public class Bullet : MonoBehaviour
             }
         }
 
-        // Move the projectile towards the target if available
-        if (target != null && rb != null)
+        // Direct the bullet towards the target if one exists
+        if (target != null)
         {
             Vector3 direction = (target.position - transform.position).normalized;
             rb.velocity = direction * speed;
+        }
+        else
+        {
+            // Launch the bullet forward if no target is available
+            rb.velocity = transform.forward * speed;
         }
     }
 
     private void Update()
     {
-        Destroy(this.gameObject,1f);
+        // Destroy the temporary target if it was created
+        if (target != null && target.name == "TemporaryTarget" && Vector3.Distance(transform.position, target.position) < 0.1f)
+        {
+            Destroy(target.gameObject);
+        }
+
+        // Destroy the bullet after 1 second
+        Destroy(gameObject, 1f);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -63,9 +86,9 @@ public class Bullet : MonoBehaviour
             if (player != null)
             {
                 // Apply damage to the player
-                //player.TakeDamage(damage);
+                // player.TakeDamage(damage);
             }
-            if(dak == Meledak.ya)
+            if (dak == Meledak.ya)
             {
                 Instantiate(Explode, transform.position, Quaternion.identity);
             }
@@ -79,13 +102,11 @@ public class Bullet : MonoBehaviour
             // {
             //     enemy.TakeDamage((int)damage);
             // }
-            Destroy(gameObject);
             if (dak == Meledak.ya)
             {
                 Instantiate(Explode, transform.position, Quaternion.identity);
             }
             Destroy(gameObject);
         }
-        Destroy(gameObject,1f);
     }
 }
