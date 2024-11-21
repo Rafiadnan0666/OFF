@@ -64,7 +64,7 @@ public class MobilRand : MonoBehaviour
         // Move the car towards a destination (this can be set or be random)
         if (!isPlayerNearby)
         {
-            // Set a destination (replace with your logic for random movement or predefined path)
+         
             //navMeshAgent.SetDestination(new Vector3(Random.Range(-10f, 10f), 0f, Random.Range(-10f, 10f)));
         }
 

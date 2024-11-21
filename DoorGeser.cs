@@ -44,4 +44,12 @@ public class DoorGeser : MonoBehaviour
             isOpening = true;
         }
     }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (isOpening)
+        {
+               
+        }
+    }
 }

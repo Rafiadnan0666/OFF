@@ -34,6 +34,7 @@ public class Pesawat : MonoBehaviour
             if (planeSound != null)
             {
                 planeSound.pitch = 1.0f + (1.0f - progress); 
+                planeSound.bypassReverbZones = true;
             }
 
            
@@ -48,14 +49,18 @@ public class Pesawat : MonoBehaviour
         }
     }
 
-    public void StartLanding()
+    public void StartLanding(bool isLanding)
     {
-        if (planeSound != null && !planeSound.isPlaying)
+        if (isLanding)
         {
-            planeSound.Play();
-        }
+            if (planeSound != null && !planeSound.isPlaying)
+            {
+                planeSound.Play();
+            }
 
-        elapsedTime = 0.0f;
-        isLanding = true;
+            elapsedTime = 0.0f;
+            isLanding = true;
+        }
+      
     }
 }

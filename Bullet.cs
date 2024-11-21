@@ -96,7 +96,7 @@ public class Bullet : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
-            // Uncomment and customize this if you have an Enemy script with a TakeDamage method
+            
             // Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             // if (enemy != null)
             // {
@@ -107,6 +107,10 @@ public class Bullet : MonoBehaviour
                 Instantiate(Explode, transform.position, Quaternion.identity);
             }
             Destroy(gameObject);
+        }else
+        {
+            Destroy(gameObject);
+            Instantiate(Explode, transform.position,Quaternion.identity);
         }
     }
 }

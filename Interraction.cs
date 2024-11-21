@@ -97,7 +97,7 @@ public class Interaction : MonoBehaviour
                     PickUpItem(hitObject);
                 }
             }
-            else if (hitObject.CompareTag("Door"))
+            else if (hitObject.CompareTag("Door") || hitObject.CompareTag("PesawatLev"))
             {
                 ShowTextE(false);
                 ShowTextF(true);
@@ -122,6 +122,12 @@ public class Interaction : MonoBehaviour
                     if (door != null)
                     {
                         door.ToggleDoor();
+                    }
+
+                    Pesawat pesawat = hitObject.GetComponent<Pesawat>();
+                    if (pesawat != null)
+                    {
+                        pesawat.StartLanding(true);
                     }
                 }
             }
@@ -173,7 +179,7 @@ public class Interaction : MonoBehaviour
 
     bool IsPickable(GameObject item)
     {
-        return item.CompareTag("Pickable") || item.CompareTag("Gun") || item.CompareTag("Ammo") || item.CompareTag("Flashlight");
+        return item.CompareTag("Pickable") || item.CompareTag("Gun") || item.CompareTag("Ammo") || item.CompareTag("Flashlight") || item.CompareTag("PesawatLev");
     }
 
     private void StartHolding(GameObject item, Vector3 hitPoint)
