@@ -127,7 +127,7 @@ public class Interaction : MonoBehaviour
                     Pesawat pesawat = hitObject.GetComponent<Pesawat>();
                     if (pesawat != null)
                     {
-                        pesawat.StartLanding(true);
+                        pesawat.StartLanding();
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class Interaction : MonoBehaviour
 
     bool IsPickable(GameObject item)
     {
-        return item.CompareTag("Pickable") || item.CompareTag("Gun") || item.CompareTag("Ammo") || item.CompareTag("Flashlight") || item.CompareTag("PesawatLev");
+        return item.CompareTag("Pickable") || item.CompareTag("Gun") || item.CompareTag("Ammo") || item.CompareTag("Flashlight") ;
     }
 
     private void StartHolding(GameObject item, Vector3 hitPoint)
@@ -190,9 +190,10 @@ public class Interaction : MonoBehaviour
         if (currentRigidbody != null)
         {
             currentRigidbody.useGravity = false;
+
+            distanceToCamera = Vector3.Distance(mainCamera.transform.position, hitPoint);
+            offset = currentInteractable.transform.position - hitPoint;
         }
-        distanceToCamera = Vector3.Distance(mainCamera.transform.position, hitPoint);
-        offset = currentInteractable.transform.position - hitPoint;
     }
 
     private void StopHolding()

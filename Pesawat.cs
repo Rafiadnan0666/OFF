@@ -49,10 +49,9 @@ public class Pesawat : MonoBehaviour
         }
     }
 
-    public void StartLanding(bool isLanding)
+    public void StartLanding()
     {
-        if (isLanding)
-        {
+        
             if (planeSound != null && !planeSound.isPlaying)
             {
                 planeSound.Play();
@@ -60,7 +59,7 @@ public class Pesawat : MonoBehaviour
 
             elapsedTime = 0.0f;
             isLanding = true;
-        }
+        
       
     }
 }
