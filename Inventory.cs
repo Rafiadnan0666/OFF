@@ -127,8 +127,6 @@ public class Inventory : MonoBehaviour
             }
 
             currentItem.SetActive(true);
-
-         
             currentItem.transform.parent = spawnPoint;
             currentItem.transform.localPosition = Vector3.zero; 
             currentItem.transform.localRotation = Quaternion.identity;

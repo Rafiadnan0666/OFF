@@ -19,7 +19,7 @@ public class SoundHand : MonoBehaviour
             AudioSource source = gameObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.volume = volume;
-            source.loop = true; 
+            source.loop = true;
             source.Play();
             audioSources.Add(source);
         }

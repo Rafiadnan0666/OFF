@@ -328,7 +328,7 @@ public class Player : MonoBehaviour
         y = Input.GetAxisRaw("Vertical");
 
         // Check if the player is grounded and moving
-        if (grounded && (Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f))
+        if ((Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f))
         {
             // Start playing the step sound if it's not already playing
             if (!audioSource.isPlaying)
