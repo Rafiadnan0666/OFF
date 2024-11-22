@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     private Rigidbody rb;
     private bool isBoosting = false;
     private Vector3 normalVector = Vector3.up;
+    private float damage;
 
     // Rotation and look
     private float xRotation;
@@ -111,6 +112,7 @@ public class Player : MonoBehaviour
         Senter.gameObject.SetActive(Senternya);
 
         grounded = false;
+        damage = Random.Range(10,50);
     }
 
     private void FixedUpdate()
@@ -119,9 +121,9 @@ public class Player : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Bullet"))
+        if (collision.gameObject.CompareTag("Bullet") || collision.gameObject.CompareTag("Exp"))
         {
-            health -= 20f;
+            health -= damage;
             Destroy(collision.gameObject);
         }
 

@@ -97,7 +97,7 @@ public class Interaction : MonoBehaviour
                     PickUpItem(hitObject);
                 }
             }
-            else if (hitObject.CompareTag("Door") || hitObject.CompareTag("PesawatLev"))
+            else if (hitObject.CompareTag("Door") || hitObject.CompareTag("PesawatLev") || hitObject.CompareTag("Card"))
             {
                 ShowTextE(false);
                 ShowTextF(true);

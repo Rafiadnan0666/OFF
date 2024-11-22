@@ -4,52 +4,77 @@ using UnityEngine;
 
 public class DoorGeser : MonoBehaviour
 {
-    public GameObject pintu;
-    public Vector3 openPosition; 
-    public Vector3 closedPosition; 
-    public float speed = 2.0f; 
-    private bool isOpening = false; 
+    public Transform door;
+    public Vector3 doorOpenPosition;
+    public Vector3 doorClosedPosition;
+    public Light doorLight;
+    public AudioClip doorOpenSound;
+    public AudioClip doorCloseSound;
+    public string requiredCardTag = "Card";
+    public string keyTag = "Key";
+    private AudioSource audioSource;
+    private bool isOpen = false;
+    private bool isMoving = false;
+    public float doorSpeed = 2.0f;
 
-    void Start()
+    private void Start()
     {
-
-        if (closedPosition == Vector3.zero)
-        {
-            closedPosition = pintu.transform.position;
-        }
+        audioSource = GetComponent<AudioSource>();
+        doorClosedPosition = door.position;
     }
 
-
-    void Update()
+    private void OnCollisionEnter(Collision collision)
     {
-        if (isOpening)
+        if (!isMoving && (collision.gameObject.CompareTag(requiredCardTag) || collision.gameObject.CompareTag(keyTag)))
         {
-
-            pintu.transform.position = Vector3.Lerp(pintu.transform.position, openPosition, speed * Time.deltaTime);
-
-      
-            if (Vector3.Distance(pintu.transform.position, openPosition) < 0.01f)
-            {
-                pintu.transform.position = openPosition;
-                isOpening = false;
-            }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-     
-        if (other.CompareTag("Card"))
-        {
-            isOpening = true;
+            isOpen = true;
+            StartCoroutine(SlideDoor(doorOpenPosition));
+            ActivateLight(true);
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (isOpening)
+        if (!isMoving && (collision.gameObject.CompareTag(requiredCardTag) || collision.gameObject.CompareTag(keyTag)))
         {
-               
+            isOpen = false;
+            StartCoroutine(SlideDoor(doorClosedPosition));
+            ActivateLight(false);
         }
     }
+
+    private IEnumerator SlideDoor(Vector3 targetPosition)
+    {
+        isMoving = true;
+
+        if (audioSource != null)
+        {
+            if (isOpen && doorOpenSound != null)
+            {
+                audioSource.PlayOneShot(doorOpenSound, 1.0f);
+            }
+            else if (!isOpen && doorCloseSound != null)
+            {
+                audioSource.PlayOneShot(doorCloseSound, 1.0f);
+            }
+        }
+
+        while (Vector3.Distance(door.position, targetPosition) > 0.01f)
+        {
+            door.position = Vector3.MoveTowards(door.position, targetPosition, doorSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        door.position = targetPosition;
+        isMoving = false;
+    }
+
+    private void ActivateLight(bool lightState)
+    {
+        if (doorLight != null)
+        {
+            doorLight.gameObject.SetActive(lightState);
+        }
+    }
+
 }
