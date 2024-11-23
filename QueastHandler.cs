@@ -10,4 +10,12 @@ public class QueastHandler : MonoBehaviour
     {
        
     }
+
+    public void Ques()
+    {
+        foreach (var ques in Quest)
+        {
+            
+        }
+    }
 }

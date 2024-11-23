@@ -42,7 +42,7 @@ public class DoorGeser : MonoBehaviour
             ActivateLight(false);
         }
     }
-
+    
     private IEnumerator SlideDoor(Vector3 targetPosition)
     {
         isMoving = true;
