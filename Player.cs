@@ -90,6 +90,10 @@ public class Player : MonoBehaviour
     public Light Senter;
     public bool Senternya = false;
 
+    public Transform groundCheck;
+    public float groundDistance = 0.2f;
+
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -206,16 +210,26 @@ public class Player : MonoBehaviour
         if (sprinting && grounded)
         {
             isSliding = true;
-            rb.AddForce(orientation.transform.forward * runSpeed, ForceMode.VelocityChange);
+
+            Vector3 slideDirection = new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized;
+            rb.AddForce(slideDirection * runSpeed * 0.001f, ForceMode.VelocityChange);
         }
+
         transform.localScale = crouchScale;
+
+
         transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
     }
 
     private void StopCrouch()
     {
+   
         isSliding = false;
+
+      
         transform.localScale = playerScale;
+
+      
         transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
     }
 

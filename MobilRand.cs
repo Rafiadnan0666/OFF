@@ -19,7 +19,7 @@ public class MobilRand : MonoBehaviour
 
     private void Start()
     {
-        // Check if NavMeshAgent is assigned, if not, try to get it from the car GameObject
+        
         if (navMeshAgent == null)
         {
             navMeshAgent = GetComponent<NavMeshAgent>();
@@ -61,7 +61,7 @@ public class MobilRand : MonoBehaviour
 
     private void Update()
     {
-        // Move the car towards a destination (this can be set or be random)
+      
         if (!isPlayerNearby)
         {
          
