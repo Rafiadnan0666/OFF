@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Untagged"))
         {
             readyToJump = true;
             grounded = true;
@@ -141,7 +141,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Untagged"))
         {
             readyToJump = false;
             grounded = false;
@@ -343,20 +343,18 @@ public class Player : MonoBehaviour
         x = Input.GetAxisRaw("Horizontal");
         y = Input.GetAxisRaw("Vertical");
 
-        // Check if the player is grounded and moving
+    
         if ((Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f))
         {
-            // Start playing the step sound if it's not already playing
             if (!audioSource.isPlaying)
             {
-                audioSource.loop = true; // Ensure the AudioSource is set to loop
+                audioSource.loop = true; 
                 audioSource.clip = stepSound;
                 audioSource.Play();
             }
         }
         else
         {
-            // Stop playing the sound if the player is not moving or not grounded
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
