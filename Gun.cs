@@ -15,6 +15,7 @@ public class Gun : MonoBehaviour
 
     public GameObject bulletPrefab;
     public GameObject muzzleFlashPrefab;
+
     public AudioClip fireSound;
     public AudioClip reloadSound;
     public AudioSource audioSource;

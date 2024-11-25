@@ -22,6 +22,7 @@ public class Inventory : MonoBehaviour
     public Text slot3Text;
     public Text flashlightSlotText;
 
+
     private GameObject[] slots;
     private GameObject[] storedItems;
     private Text[] slotTexts;
