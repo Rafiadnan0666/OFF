@@ -4,20 +4,20 @@ using UnityEngine.AI;
 
 public class Kucing : MonoBehaviour
 {
-    public NavMeshAgent kucing;
-    public GameObject player;
-    public Animator kucingAnimator;
-    public AudioSource kucingAudio;
-    public AudioClip meowClip;
-    public AudioClip walkClip;
-    public float roamRadius = 20f;
-    public float timeToApproachPlayer = 5f;
-    public float health = 100f;
+    public NavMeshAgent kucing; // The NavMeshAgent component
+    public GameObject player; // Reference to the player
+    public Animator kucingAnimator; // Animator component
+    public AudioSource kucingAudio; // AudioSource for sound effects
+    public AudioClip meowClip; // Audio when the cat meows
+    public AudioClip walkClip; // Audio when the cat walks
+    public float roamRadius = 20f; // Roaming radius for random movement
+    public float timeToApproachPlayer = 5f; // Time to approach the player
+    public float health = 100f; // Cat's health
 
-    private float distanceToPlayer;
-    private bool isJumping = false;
-    private bool isApproachingPlayer = false;
-    private float approachTimer = 0f;
+    private float distanceToPlayer; // Distance between the cat and the player
+    private bool isJumping = false; // Flag to determine if the cat is jumping
+    private bool isApproachingPlayer = false; // Flag for approaching the player
+    private float approachTimer = 0f; // Timer for how long the cat follows the player
 
     void Start()
     {
@@ -30,7 +30,7 @@ public class Kucing : MonoBehaviour
         DetectPlayer();
         HandleMovement();
 
-        
+        // If the cat's health is 0 or less, it dies
         if (health <= 0)
         {
             Die();
@@ -50,14 +50,10 @@ public class Kucing : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        
-        if (collision.gameObject.CompareTag("bullet"))
+        if (collision.gameObject.CompareTag("Bullet"))
         {
-          
-            health -= 20f; 
-
-         
-            Destroy(collision.gameObject);
+            health -= 20f; // Reduce health when hit by a bullet
+            Destroy(collision.gameObject); // Destroy the bullet
         }
     }
 
@@ -67,7 +63,11 @@ public class Kucing : MonoBehaviour
         {
             approachTimer -= Time.deltaTime;
             kucing.destination = player.transform.position;
-            kucingAnimator.SetBool("isWalking", true);
+
+            // Play the "crawl_fast" animation when approaching the player
+            kucingAnimator.SetBool("crawl", false);
+            kucingAnimator.SetBool("crawl_fast", true);
+
             kucingAudio.clip = walkClip;
             if (!kucingAudio.isPlaying)
                 kucingAudio.Play();
@@ -95,7 +95,11 @@ public class Kucing : MonoBehaviour
             Vector3 finalPosition = hit.position;
 
             kucing.destination = finalPosition;
-            kucingAnimator.SetBool("isWalking", true);
+
+            // Play the "crawl" animation when roaming
+            kucingAnimator.SetBool("crawl", true);
+            kucingAnimator.SetBool("crawl_fast", false);
+
             kucingAudio.clip = walkClip;
             if (!kucingAudio.isPlaying)
                 kucingAudio.Play();
@@ -110,17 +114,21 @@ public class Kucing : MonoBehaviour
     private IEnumerator Jump()
     {
         isJumping = true;
-        kucingAnimator.SetTrigger("Jump");
-        yield return new WaitForSeconds(2f);
+
+        // Trigger the "pounce" animation when jumping
+        kucingAnimator.SetTrigger("pounce");
+
+        yield return new WaitForSeconds(2f); // Duration of the jump animation
         isJumping = false;
     }
 
     private void Die()
     {
-        // klo mati ngapain
-        kucingAnimator.SetTrigger("Die");
-        kucing.enabled = false;
-        kucingAudio.Stop(); 
+        // Play the "die" animation when the cat dies
+        kucingAnimator.SetTrigger("die");
+
+        kucing.enabled = false; // Disable the NavMeshAgent
+        kucingAudio.Stop(); // Stop audio playback
         Debug.Log("The cat has died.");
     }
 

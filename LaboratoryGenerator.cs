@@ -15,7 +15,7 @@ public class LaboratoryGenerator : MonoBehaviour
     public GameObject CorridorTurn;
     public GameObject CorridorThreeWay;
     public GameObject RoomPrefab;
-
+                    
     private void Start()
     {
         if (GenerateOnStart) StartCoroutine(StartGeneration());

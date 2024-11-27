@@ -2,23 +2,21 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 20f;                   // Speed of the bullet
+    public float speed = 20f;                   // Bullet speed
     public float damage = 10f;                 // Damage dealt by the bullet
-    public Transform target;                   // Target for the bullet
-    public TargetType currentTarget;           // Type of target (Player or Enemy)
-    public GameObject Explode;                 // Explosion effect prefab
-    public Meledak dak;                        // Explosion type
+    public Transform target;                   // Target to aim at
+    public TargetType currentTarget;           // Type of target
+    public GameObject Explode;                 // Explosion prefab
+    public Meledak dak;                        // Whether the bullet explodes on impact
 
     public enum TargetType { Player, Enemy }
     public enum Meledak { ya, ga }
 
     private Rigidbody rb;
-    private Camera mainCamera;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        mainCamera = Camera.main;
 
         if (rb == null)
         {
@@ -26,55 +24,39 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        // Determine bullet behavior based on the target type
         if (currentTarget == TargetType.Enemy)
         {
-            if (target == null && mainCamera != null)
-            {
-                // Perform a raycast from the center of the screen
-                Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    // If a hit is detected, aim the bullet at the hit point
-                    target = new GameObject("TemporaryTarget").transform;
-                    target.position = hit.point;
-                }
-            }
+            // If targeting an enemy, simply shoot forward
+            rb.velocity = transform.forward * speed;
         }
         else if (currentTarget == TargetType.Player)
         {
+            // If targeting the player, find and aim at the player
             if (target == null)
             {
-                // Find the player by tag if no specific target is assigned
                 GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
                 if (playerObject != null)
                 {
                     target = playerObject.transform;
                 }
             }
-        }
 
-        // Direct the bullet towards the target if one exists
-        if (target != null)
-        {
-            Vector3 direction = (target.position - transform.position).normalized;
-            rb.velocity = direction * speed;
-        }
-        else
-        {
-            // Launch the bullet forward if no target is available
-            rb.velocity = transform.forward * speed;
+            if (target != null)
+            {
+                Vector3 direction = (target.position - transform.position).normalized;
+                rb.velocity = direction * speed;
+            }
+            else
+            {
+                rb.velocity = transform.forward * speed;
+            }
         }
     }
 
     private void Update()
     {
-        // Destroy the temporary target if it was created
-        if (target != null && target.name == "TemporaryTarget" && Vector3.Distance(transform.position, target.position) < 0.1f)
-        {
-            Destroy(target.gameObject);
-        }
-
-        // Destroy the bullet after 1 second
+        // Destroy bullet after 1 second if no collision occurs
         Destroy(gameObject, 1f);
     }
 
@@ -85,7 +67,7 @@ public class Bullet : MonoBehaviour
             Player player = collision.gameObject.GetComponent<Player>();
             if (player != null)
             {
-                // Apply damage to the player
+                // Handle player damage
                 // player.TakeDamage(damage);
             }
             if (dak == Meledak.ya)
@@ -96,7 +78,7 @@ public class Bullet : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
-            
+            // Handle enemy damage
             // Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             // if (enemy != null)
             // {
@@ -107,10 +89,12 @@ public class Bullet : MonoBehaviour
                 Instantiate(Explode, transform.position, Quaternion.identity);
             }
             Destroy(gameObject);
-        }else
+        }
+        else
         {
+            // Handle collision with other objects
+            Instantiate(Explode, transform.position, Quaternion.identity);
             Destroy(gameObject);
-            Instantiate(Explode, transform.position,Quaternion.identity);
         }
     }
 }
