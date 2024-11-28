@@ -30,7 +30,7 @@ public class Kucing : MonoBehaviour
         DetectPlayer();
         HandleMovement();
 
-        // If the cat's health is 0 or less, it dies
+     
         if (health <= 0)
         {
             Die();
@@ -52,8 +52,8 @@ public class Kucing : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
-            health -= 20f; // Reduce health when hit by a bullet
-            Destroy(collision.gameObject); // Destroy the bullet
+            health -= 20f; 
+            Destroy(collision.gameObject); 
         }
     }
 
@@ -64,7 +64,7 @@ public class Kucing : MonoBehaviour
             approachTimer -= Time.deltaTime;
             kucing.destination = player.transform.position;
 
-            // Play the "crawl_fast" animation when approaching the player
+        
             kucingAnimator.SetBool("crawl", false);
             kucingAnimator.SetBool("crawl_fast", true);
 
@@ -96,7 +96,7 @@ public class Kucing : MonoBehaviour
 
             kucing.destination = finalPosition;
 
-            // Play the "crawl" animation when roaming
+      
             kucingAnimator.SetBool("crawl", true);
             kucingAnimator.SetBool("crawl_fast", false);
 
@@ -115,21 +115,22 @@ public class Kucing : MonoBehaviour
     {
         isJumping = true;
 
-        // Trigger the "pounce" animation when jumping
+  
         kucingAnimator.SetTrigger("pounce");
 
-        yield return new WaitForSeconds(2f); // Duration of the jump animation
+        yield return new WaitForSeconds(2f); 
         isJumping = false;
     }
 
     private void Die()
     {
-        // Play the "die" animation when the cat dies
+   
         kucingAnimator.SetTrigger("die");
 
-        kucing.enabled = false; // Disable the NavMeshAgent
-        kucingAudio.Stop(); // Stop audio playback
+        kucing.enabled = false; 
+        kucingAudio.Stop(); 
         Debug.Log("The cat has died.");
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmos()
