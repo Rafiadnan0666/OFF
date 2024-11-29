@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -28,18 +29,31 @@ public class Player : MonoBehaviour
     public Transform orientation;
     public GameObject forceFieldPrefab;
 
+    // Camera Effects
+    //public GameObject postProcessingVolume;
+    //private ChromaticAberration chromaticAberration;
+    //private LensDistortion lensDistortion;
+
     // Other
     private Rigidbody rb;
     private bool isBoosting = false;
     private Vector3 normalVector = Vector3.up;
     private float damage;
 
+    // Rotation and look
+    private float xRotation;
+    private float yRotation;
+    private float sensitivity = 50f;
+    private float sensMultiplier = 1f;
+
     // Movement
     public float walkSpeed = 7f;
     public float runSpeed = 15f;
     public float boostSpeed = 20f;
     public float maxSpeed = 20f;
-    private bool grounded = false;
+    public bool grounded = false;
+    public LayerMask whatIsGround;
+    private bool isSliding = false;
 
     public float counterMovement = 0.175f;
     private float threshold = 0.01f;
@@ -64,27 +78,29 @@ public class Player : MonoBehaviour
     private float x, y;
     bool jumping, crouching, sprinting;
 
-    // Audio
+    // Step Sound
     public AudioClip stepSound;
     public AudioClip Drop;
     private AudioSource audioSource;
+    private float stepInterval = 0.5f;
+    private float nextStepTime = 0f;
     private bool isPlayingStepSound = false;
 
-    // Flashlight
+    //built in
     public Light Senter;
     public bool Senternya = false;
 
     public Transform groundCheck;
     public float groundDistance = 0.2f;
 
-    // Declare camera rotation variables
-    private float xRotation = 0f;
-    private float yRotation = 0f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();
+        //if (postProcessingVolume.profile.TryGet(out ChromaticAberration ca))
+        //    chromaticAberration = ca;
+        //if (postProcessingVolume.profile.TryGet(out LensDistortion ld))
+        //    lensDistortion = ld;
     }
 
     private void Start()
@@ -94,16 +110,19 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
         playerCam.gameObject.SetActive(true);
         canvasPause.gameObject.SetActive(false);
+        audioSource = GetComponent<AudioSource>();
         initialCamPosition = playerCam.localPosition;
         canvasMati.gameObject.SetActive(false);
         Senter.gameObject.SetActive(Senternya);
+
+        grounded = false;
+        damage = Random.Range(10,50);
     }
 
     private void FixedUpdate()
     {
         Movement();
     }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Bullet") || collision.gameObject.CompareTag("Exp"))
@@ -112,7 +131,7 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Untagged"))
         {
             readyToJump = true;
             grounded = true;
@@ -122,11 +141,24 @@ public class Player : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Untagged"))
         {
             readyToJump = false;
             grounded = false;
         }
+    }
+
+    private Vector2 FindVelRelativeToLook()
+    {
+        float lookAngle = orientation.transform.eulerAngles.y;
+        float moveAngle = Mathf.Atan2(rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg;
+
+        float u = Mathf.DeltaAngle(lookAngle, moveAngle);
+        float magnitude = rb.velocity.magnitude;
+        float yMag = magnitude * Mathf.Cos(u * Mathf.Deg2Rad);
+        float xMag = magnitude * Mathf.Sin(u * Mathf.Deg2Rad);
+
+        return new Vector2(xMag, yMag);
     }
 
     private void Update()
@@ -138,7 +170,7 @@ public class Player : MonoBehaviour
         UpdateUI();
         Die();
     }
-
+    
     private void MyInput()
     {
         x = Input.GetAxisRaw("Horizontal");
@@ -147,7 +179,7 @@ public class Player : MonoBehaviour
         crouching = Input.GetKey(KeyCode.C);
         sprinting = Input.GetKey(KeyCode.LeftShift);
 
-        if (sprinting)
+        if (sprinting )
         {
             stamina -= Time.deltaTime * 10f;
         }
@@ -177,17 +209,27 @@ public class Player : MonoBehaviour
     {
         if (sprinting && grounded)
         {
+            isSliding = true;
+
             Vector3 slideDirection = new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized;
             rb.AddForce(slideDirection * runSpeed * 0.001f, ForceMode.VelocityChange);
         }
 
         transform.localScale = crouchScale;
+
+
         transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
     }
 
     private void StopCrouch()
     {
+   
+        isSliding = false;
+
+      
         transform.localScale = playerScale;
+
+      
         transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
     }
 
@@ -198,8 +240,10 @@ public class Player : MonoBehaviour
         if (stamina > minStamina)
         {
             stamina -= Time.deltaTime * 10f;
+            ApplyCameraEffects(true);
         }
     }
+
 
     private void StopBoost()
     {
@@ -209,11 +253,22 @@ public class Player : MonoBehaviour
         {
             stamina += Time.deltaTime * 5f;
         }
+        ApplyCameraEffects(false);
+    }
+
+    private void ApplyCameraEffects(bool isActive)
+    {
+        float targetChromaticValue = isActive ? 0.6f : 0f;
+        float targetLensDistortionValue = isActive ? -0.3f : 0f;
+        
     }
 
     private void Movement()
     {
         float currentSpeed = isBoosting ? boostSpeed : (sprinting ? runSpeed : walkSpeed);
+        Vector2 mag = FindVelRelativeToLook();
+        CounterMovement(x, y, mag);
+
         if (readyToJump && jumping) Jump();
 
         float multiplier = grounded ? 1f : 0.5f;
@@ -227,19 +282,42 @@ public class Player : MonoBehaviour
         {
             readyToJump = false;
             rb.AddForce(Vector3.up * jumpForce * 2f);
+            rb.AddForce(normalVector * jumpForce * 0.5f);
+
+
+            Vector3 vel = rb.velocity;
+            rb.velocity = new Vector3(vel.x, vel.y > 0 ? vel.y / 2 : 0, vel.z);
         }
     }
 
+  
+
     private void Look()
     {
-        float mouseX = Input.GetAxis("Mouse X") * 2.0f;
-        float mouseY = Input.GetAxis("Mouse Y") * 2.0f;
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.fixedDeltaTime * sensMultiplier;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.fixedDeltaTime * sensMultiplier;
 
         xRotation = Mathf.Clamp(xRotation - mouseY, -90f, 90f);
         yRotation += mouseX;
 
         playerCam.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
         orientation.localRotation = Quaternion.Euler(0, yRotation, 0);
+    }
+
+    private void CounterMovement(float x, float y, Vector2 mag)
+    {
+        if (!grounded || jumping) return;
+
+        if (Mathf.Abs(mag.x) > threshold && Mathf.Abs(x) < 0.05f)
+            rb.AddForce(orientation.transform.right * -mag.x * counterMovement);
+        if (Mathf.Abs(mag.y) > threshold && Mathf.Abs(y) < 0.05f)
+            rb.AddForce(orientation.transform.forward * -mag.y * counterMovement);
+
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            Vector3 n = rb.velocity.normalized * maxSpeed;
+            rb.velocity = new Vector3(n.x, rb.velocity.y, n.z);
+        }
     }
 
     private void SmoothCameraShake()
@@ -262,11 +340,15 @@ public class Player : MonoBehaviour
 
     private void PlayStepSound()
     {
+        x = Input.GetAxisRaw("Horizontal");
+        y = Input.GetAxisRaw("Vertical");
+
+    
         if ((Mathf.Abs(x) > 0.1f || Mathf.Abs(y) > 0.1f))
         {
             if (!audioSource.isPlaying)
             {
-                audioSource.loop = true;
+                audioSource.loop = true; 
                 audioSource.clip = stepSound;
                 audioSource.Play();
             }
@@ -280,6 +362,8 @@ public class Player : MonoBehaviour
         }
     }
 
+
+
     private void UpdateUI()
     {
         healthText.text = health.ToString();
@@ -289,10 +373,12 @@ public class Player : MonoBehaviour
     public void TogglePause()
     {
         bool isPaused = !canvasPause.gameObject.activeSelf;
+
         canvasPause.gameObject.SetActive(isPaused);
         canvasMain.gameObject.SetActive(!isPaused);
 
         Time.timeScale = isPaused ? 0 : 1;
+
         Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = isPaused;
     }
@@ -314,12 +400,19 @@ public class Player : MonoBehaviour
         }
     }
 
+
     private void senter()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            Senternya = !Senternya;
+            Senternya = !Senternya; 
             Senter.gameObject.SetActive(Senternya);
         }
     }
+
+
 }
+
+
+
+

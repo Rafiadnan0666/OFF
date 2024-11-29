@@ -34,7 +34,7 @@ public class EnemyRobot : MonoBehaviour
 
     private void Awake()
     {
-        player = GameObject.Find("Player").transform;
+        player = GameObject.Find("Player ").transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
