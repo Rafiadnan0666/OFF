@@ -12,6 +12,7 @@ public class Pesawat : MonoBehaviour
     private float elapsedTime = 0.0f;
     private bool isLanding = true;
 
+    
     void Start()
     {
         if (planeSound != null)

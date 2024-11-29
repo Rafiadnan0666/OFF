@@ -54,6 +54,9 @@ public class Kucing : MonoBehaviour
         {
             health -= 20f; 
             Destroy(collision.gameObject); 
+        }else if (collision.gameObject.CompareTag("Player"))
+        {
+            Destroy(this.gameObject);
         }
     }
 
