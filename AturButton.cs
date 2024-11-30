@@ -20,10 +20,10 @@ public class AturButton : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void Credit()
+    public void HowTo()
     {
-        Debug.Log("Credit button clicked.");
-        SceneManager.LoadScene("Credit");
+        Debug.Log("How");
+        SceneManager.LoadScene("ApaNih");
     }
 
 }
