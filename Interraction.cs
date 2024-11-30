@@ -53,8 +53,13 @@ public class Interaction : MonoBehaviour
         if (Physics.Raycast(ray, out hit, maxInteractionDistance, interactableLayer))
         {
             GameObject hitObject = hit.collider.gameObject;
-            if (hitObject.CompareTag("Interactable") )
+            if (hitObject.CompareTag("Interactable") || hitObject.CompareTag("Arti"))
             {
+                Float floatComponent = hitObject.GetComponent<Float>();
+                if (floatComponent != null)
+                {
+                    floatComponent.SetFloating(false);
+                }
                 if (Input.GetMouseButtonDown(0))
                 {
                     isHolding = true;
@@ -74,30 +79,7 @@ public class Interaction : MonoBehaviour
                     InteractWithObject(hitObject);
                 }
             }
-            else if (IsPickable(hitObject))
-            {
-                ShowTextE(true);
-                ShowTextF(false);
-                if (Input.GetMouseButtonDown(0))
-                {
-                    isHolding = true;
-                    currentInteractable = hitObject;
-                    currentRigidbody = currentInteractable.GetComponent<Rigidbody>();
-
-                    if (currentRigidbody != null)
-                    {
-                        currentRigidbody.useGravity = false;
-                    }
-                    distanceToCamera = Vector3.Distance(mainCamera.transform.position, hit.point);
-                    offset = currentInteractable.transform.position - hit.point;
-                }
-
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    PickUpItem(hitObject);
-                }
-            }
-            else if (hitObject.CompareTag("Door") || hitObject.CompareTag("PesawatLev") || hitObject.CompareTag("Card"))
+            else if (hitObject.CompareTag("Door"))
             {
                 ShowTextE(false);
                 ShowTextF(true);
@@ -130,6 +112,49 @@ public class Interaction : MonoBehaviour
                         pesawat.StartLanding();
                     }
                 }
+            }
+            else if (IsPickable(hitObject))
+            {
+                ShowTextE(true);
+                ShowTextF(false);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isHolding = true;
+                    currentInteractable = hitObject;
+                    currentRigidbody = currentInteractable.GetComponent<Rigidbody>();
+
+                    if (currentRigidbody != null)
+                    {
+                        currentRigidbody.useGravity = false;
+                    }
+                    distanceToCamera = Vector3.Distance(mainCamera.transform.position, hit.point);
+                    offset = currentInteractable.transform.position - hit.point;
+                }
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    PickUpItem(hitObject);
+                }
+            }
+            else if (hitObject.CompareTag("Card"))
+            {
+                
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isHolding = true;
+                    currentInteractable = hitObject;
+                    currentRigidbody = currentInteractable.GetComponent<Rigidbody>();
+
+                    if (currentRigidbody != null)
+                    {
+                        currentRigidbody.useGravity = false;
+                    }
+                    distanceToCamera = Vector3.Distance(mainCamera.transform.position, hit.point);
+                    offset = currentInteractable.transform.position - hit.point;
+                }
+
+             
             }
 
             else
